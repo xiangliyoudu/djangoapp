@@ -14,7 +14,6 @@ def loginMain(req):
 
 # app管理请求
 def listApp(req):
-    print(req)
     # return HttpResponse('applist page')
     cx = dict()
     # 查询app所有平台记录
@@ -30,14 +29,15 @@ def listApp(req):
 
     return render(req, 'appList.html', context=cx)
 
+# 二三级分类ajax查询
 def categorylevellistJson(req):
     # 根据一级、二级分类查询二、三级分类记录
     pid = req.GET.get('pid')
     # 获取queryset
-    level2Set = models.AppCategory.objects.filter(parentid=pid)
+    level23Set = models.AppCategory.objects.filter(parentid=pid)
     # 序列化为json
-    level2Set = serializers.serialize('json', level2Set, ensure_ascii=False)
+    level23Set = serializers.serialize('json', level23Set, ensure_ascii=False)
     # 参数字典
-    jsondata = dict()
-    jsondata['categoryLevel2List'] = level2Set
-    return JsonResponse(jsondata)
+    # jsondata = dict()
+    # jsondata['categoryLevel2List'] = level23Set
+    return JsonResponse(level23Set, safe=False)

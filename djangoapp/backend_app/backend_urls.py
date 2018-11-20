@@ -10,5 +10,9 @@ urlpatterns = [
 
     url(r'^main/$', views.loginMain, name='loginMain'),
 
+    url(r'^app/list/$', views.listApp, name='listApp'),
+
+    url(r'^categorylevellist.json/$', views.categorylevellistJson, name='categorylevellistJson'),
+
 
 ]

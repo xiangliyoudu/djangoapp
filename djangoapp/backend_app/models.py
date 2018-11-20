@@ -136,6 +136,9 @@ class DataDictionary(models.Model):
         managed = False
         db_table = 'data_dictionary'
 
+    def __str__(self):
+        return self.typename
+
 
 class DevUser(models.Model):
     id = models.BigIntegerField(primary_key=True)

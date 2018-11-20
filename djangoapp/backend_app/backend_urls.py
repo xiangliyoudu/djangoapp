@@ -1,16 +1,14 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-# 导入backend_app 子路由
-from backend_app import backend_urls as bu
+# 导入视图
+from . import views
 
 urlpatterns = [
     # Examples:
     # url(r'^$', 'djangoapp.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^main/$', views.loginMain, name='loginMain'),
 
-    # 子路由backend处理请求
-    url(r'^backend/', include(bu)),
 
 ]

@@ -26,6 +26,9 @@ class AppCategory(models.Model):
         managed = False
         db_table = 'app_category'
 
+    def __str__(self):
+        return self.categoryname
+
 
 class AppInfo(models.Model):
     id = models.BigIntegerField(primary_key=True)
@@ -57,6 +60,8 @@ class AppInfo(models.Model):
         managed = False
         db_table = 'app_info'
 
+    def __str__(self):
+        return self.softwarename
 
 class AppPromotion(models.Model):
     id = models.BigIntegerField(primary_key=True)
@@ -95,6 +100,8 @@ class AppVersion(models.Model):
         managed = False
         db_table = 'app_version'
 
+    def __str__(self):
+        return self.versionno
 
 class BackendUser(models.Model):
     id = models.BigIntegerField(primary_key=True)
@@ -111,6 +118,8 @@ class BackendUser(models.Model):
         managed = False
         db_table = 'backend_user'
 
+    def __str__(self):
+        return self.username
 
 class DataDictionary(models.Model):
     id = models.BigIntegerField(primary_key=True)
@@ -143,3 +152,6 @@ class DevUser(models.Model):
     class Meta:
         managed = False
         db_table = 'dev_user'
+
+    def __str__(self):
+        return self.devname

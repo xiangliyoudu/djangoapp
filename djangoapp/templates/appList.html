@@ -373,16 +373,17 @@
 										<td tabindex="0" class="sorting_1">{{appInfo.softwarename}}</td>
 										<td>{{appInfo.apkname }}</td>
 										<td>{{appInfo.softwaresize }}</td>
-										<td>{{appInfo.flatformname }}</td>
-										<td>{{appInfo.categorylevel1name }} -> {{appInfo.categorylevel2name }} -> {{appInfo.categorylevel3name }}</td>
-										<td>{{appInfo.statusname }}</td>
+										<td>{{appInfo.flatformid.valuename }}</td>
+										<td>{{appInfo.categorylevel1.categoryname }} -> {{appInfo.categorylevel2.categoryname }} -> {{appInfo.categorylevel3.categoryname }}</td>
+										<td>{{appInfo.status.valuename }}</td>
 										<td>{{appInfo.downloads }}</td>
-										<td>{{appInfo.versionno }}</td>
+										<td>{{appInfo.versionid.versionno }}</td>
 										<td>
 										<button type="button" class="btn btn-default checkApp"
-											appinfoid="{{appInfo.id }}" versionid="{{appInfo.versionid }}" status="{{appInfo.status }}"
-											statusname="{{appInfo.statusname }}"
-											data-toggle="tooltip" data-placement="top" title="" data-original-title="查看并审核APP">审核</button>
+											appinfoid="{{appInfo.pk }}" versionid="{{appInfo.versionid.id }}" status="{{appInfo.status.valueid }}"
+											statusname="{{appInfo.status.valuename }}"
+											data-toggle="tooltip" data-placement="top" title="" data-original-title="查看并审核APP">审核
+                                        </button>
 										</td>
 									</tr>
                                 {% endfor %}

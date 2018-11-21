@@ -14,32 +14,26 @@ def loginMain(req):
 
 # app管理请求
 def listApp(req):
-    PAGE_NUM = 2
+    PAGE_NUM = 5
     # current page num
     # 当前页码
     currentPageNo = 1
-    # ‘查询’参数
-    querySoftwareName = None
-    queryFlatformId = None
-    queryCategoryLevel1 = None
-    queryCategoryLevel2 = None
-    queryCategoryLevel3 = None
     # filter参数字典
     queryParmsDict = dict()
 
     if req.POST:
         # 获取当前页面
-        currentPageNo = req.POST['pageIndex']
+        currentPageNo = int(req.POST.get('pageIndex'))
         # 获取‘查询’表单参数，过滤None值，添加到queryParmsdict
-        querySoftwareName = req.POST['querySoftwareName']
+        querySoftwareName = req.POST.get('querySoftwareName')
         queryParmsDict = filterNoneValue(queryParmsDict, 'softwarename', querySoftwareName)
-        queryFlatformId = req.POST['queryFlatformId']
+        queryFlatformId = req.POST.get('queryFlatformId')
         queryParmsDict = filterNoneValue(queryParmsDict, 'flatformid', queryFlatformId)
-        queryCategoryLevel1 = req.POST['queryCategoryLevel1']
+        queryCategoryLevel1 = req.POST.get('queryCategoryLevel1')
         queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel1', queryCategoryLevel1)
-        queryCategoryLevel2 = req.POST['queryCategoryLevel2']
+        queryCategoryLevel2 = req.POST.get('queryCategoryLevel2')
         queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel2', queryCategoryLevel2)
-        queryCategoryLevel3 = req.POST['queryCategoryLevel3']
+        queryCategoryLevel3 = req.POST.get('queryCategoryLevel3')
         queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel3', queryCategoryLevel3)
 
 
@@ -107,6 +101,12 @@ def categorylevellistJson(req):
     # jsondata = dict()
     # jsondata['categoryLevel2List'] = level23Set
     return JsonResponse(level23Set, safe=False)
+
+def checkAppInfo(req):
+    for k, v in req.GET.items():
+        print(k, '-->', v)
+
+    return render(req, 'appcheck.html')
 
 # 过滤dict中的None值
 def filterNoneValue(dict, key, value):

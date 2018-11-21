@@ -200,7 +200,6 @@
 				<div class="clearfix"></div>
 			</div>
 			<div class="x_content">
-                <!--<div id="ooo">uuu</div>-->
 				<form method="post" action="/backend/app/list/">
                     {% csrf_token %}
 					<input type="hidden" name="pageIndex" value="1" />
@@ -220,16 +219,11 @@
 							<div class="col-md-6 col-sm-6 col-xs-12">
 								<select name="queryFlatformId" class="form-control">
                                     {% if flatFormList %}
-									<!--<c:if test="${flatFormList != null }">-->
 								    <option value="">--请选择--</option>
                                     {% for dataDictionary in flatFormList %}
-                                    <!--<c:forEach var="dataDictionary" items="${flatFormList}">-->
 									<option {% if dataDictionary.valueid == queryFlatformId %} selected="selected"{% endif %}
                                         value="{{dataDictionary.valueid}}">{{dataDictionary.valuename}}</option>
-                                    <!--<c:if test="${dataDictionary.valueId == queryFlatformId }">selected="selected"</c:if>-->
-                                    <!--</c:forEach>-->
                                     {% endfor %}
-									<!--</c:if>-->
                                     {% endif %}
         						</select>
 							</div>
@@ -241,17 +235,12 @@
 							<div class="col-md-6 col-sm-6 col-xs-12">
 								<select id="queryCategoryLevel1" name="queryCategoryLevel1" class="form-control">
                                     {% if categoryLevel1List != null %}
-									<!--<c:if test="${categoryLevel1List != null }">-->
                                     <option value="">--请选择--</option>
                                     {% for appCategory in categoryLevel1List %}
-                                    <!--<c:forEach var="appCategory" items="${categoryLevel1List}">-->
                                     <option {% if appCategory.id == queryCategoryLevel1 %}selected="selected"{% endif %}
                                         value="{{appCategory.id}}">{{appCategory.categoryname}}>
-                                        <!--<c:if test="${appCategory.id == queryCategoryLevel1 }">selected="selected"</c:if>-->
                                     </option>
-                                    <!--</c:forEach>-->
                                     {% endfor %}
-									<!--</c:if>-->
                                     {% endif %}
         						</select>
 							</div>
@@ -264,17 +253,12 @@
 							<input type="hidden" name="categorylevel2list" id="categorylevel2list"/>
         						<select name="queryCategoryLevel2" id="queryCategoryLevel2" class="form-control">
                                     {% if categoryLevel2List != null %}
-        							<!--<c:if test="${categoryLevel2List != null }">-->
                                     <option value="">--请选择--</option>
                                     {% for appCategory in categoryLevel2List %}
-                                    <!--<c:forEach var="appCategory" items="${categoryLevel2List}">-->
                                     <option {% if appCategory.id == queryCategoryLevel2 %}selected="selected"{% endif %}
                                         value="{{appCategory.id}}">{{appCategory.categoryname}}>
-                                        <!--<c:if test="${appCategory.id == queryCategoryLevel2 }>"selected="selected"</c:if>-->
                                     </option>
-                                    <!--</c:forEach>-->
                                     {% endfor %}
-									<!--</c:if>-->
                                     {% endif %}
         						</select>
 							</div>
@@ -286,17 +270,12 @@
 							<div class="col-md-6 col-sm-6 col-xs-12">
         						<select name="queryCategoryLevel3" id="queryCategoryLevel3" class="form-control">
                                     {% if categoryLevel3List %}
-                                    <!--<c:if test="${categoryLevel3List != null }">-->
                                     <option value="">--请选择--</option>
                                     {% for appCategory in categoryLevel3List %}
-                                    <!--<c:forEach var="appCategory" items="${categoryLevel3List}">-->
                                     <option {% if appCategory.id == queryCategoryLevel3 %}selected="selected" {% endif %}
                                         value="{{appCategory.id}}">{{appCategory.categoryname}}
-                                        <!--<c:if test="${appCategory.id == queryCategoryLevel3 }">selected="selected"</c:if>-->
                                     </option>
-                                    <!--</c:forEach>-->
                                     {% endfor %}
-									<!--</c:if>-->
                                     {% endif %}
         						</select>
 							</div>
@@ -403,32 +382,28 @@
 							id="datatable-responsive_paginate">
 							<ul class="pagination">
                                 {% if currentPageNo > 1 %}
-								<!--<c:if test="${pages.currentPageNo > 1}">-->
 									<li class="paginate_button previous">
                                         <a href="javascript:page_nav(document.forms[0],1);"
 										aria-controls="datatable-responsive" data-dt-idx="0"
 										tabindex="0">首页</a>
 									</li>
 									<li class="paginate_button ">
-                                        <a href="javascript:page_nav(document.forms[0],{{currentPageNo}});"
+                                        <a href="javascript:page_nav(document.forms[0],{{currentPageNo|add:-1}});"
 										aria-controls="datatable-responsive" data-dt-idx="1"
 										tabindex="0">上一页</a>
 									</li>
-								<!--</c:if>-->
                                 {% endif %}
                                 {% if currentPageNo < page.num_pages %}
-								<!--<c:if test="${pages.currentPageNo < pages.totalPageCount }">-->
 									<li class="paginate_button ">
-                                        <a href="javascript:page_nav(document.forms[0],{{currentPageNo }});"
+                                        <a href="javascript:page_nav(document.forms[0],{{currentPageNo|add:1}});"
 										aria-controls="datatable-responsive" data-dt-idx="1"
 										tabindex="0">下一页</a>
 									</li>
 									<li class="paginate_button next">
-                                        <a href="javascript:page_nav(document.forms[0],{{num_pages }});"
+                                        <a href="javascript:page_nav(document.forms[0],{{page.num_pages }});"
 										aria-controls="datatable-responsive" data-dt-idx="7"
 										tabindex="0">最后一页</a>
 									</li>
-								<!--</c:if>-->
                                 {% endif %}
 							</ul>
 						</div>
@@ -448,7 +423,7 @@
 <!-- footer content -->
 	<footer>
 	  <div class="pull-right">
-	    ?016 All Rights Reserved.
+	    2016 All Rights Reserved.
 	  </div>
 	  <div class="clearfix"></div>
 	</footer>

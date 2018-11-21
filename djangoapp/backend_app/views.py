@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from . import models
-import json
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -14,14 +14,44 @@ def loginMain(req):
 
 # app管理请求
 def listApp(req):
-    # return HttpResponse('applist page')
+    PAGE_NUM = 2
+    # current page num
+    # 当前页码
+    currentPageNo = 1
+    # ‘查询’参数
+    querySoftwareName = None
+    queryFlatformId = None
+    queryCategoryLevel1 = None
+    queryCategoryLevel2 = None
+    queryCategoryLevel3 = None
+    # filter参数字典
+    queryParmsDict = dict()
+
+    if req.POST:
+        # 获取当前页面
+        currentPageNo = req.POST['pageIndex']
+        # 获取‘查询’表单参数，过滤None值，添加到queryParmsdict
+        querySoftwareName = req.POST['querySoftwareName']
+        queryParmsDict = filterNoneValue(queryParmsDict, 'softwarename', querySoftwareName)
+        queryFlatformId = req.POST['queryFlatformId']
+        queryParmsDict = filterNoneValue(queryParmsDict, 'flatformid', queryFlatformId)
+        queryCategoryLevel1 = req.POST['queryCategoryLevel1']
+        queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel1', queryCategoryLevel1)
+        queryCategoryLevel2 = req.POST['queryCategoryLevel2']
+        queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel2', queryCategoryLevel2)
+        queryCategoryLevel3 = req.POST['queryCategoryLevel3']
+        queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel3', queryCategoryLevel3)
+
+
+    # context dict
     cx = dict()
     # 查询app所有平台记录
     flatFormList = models.DataDictionary.objects.filter(typecode='APP_FLATFORM')
     # 查询一级分类记录
     categoryLevel1List = models.AppCategory.objects.filter(parentid=None)
-    # 查询所有 appinfo
-    appInfoList = models.AppInfo.objects.all()
+    # 根据queryParmsDict，查询所有 appinfo
+    appInfoList = models.AppInfo.objects.complex_filter(queryParmsDict)
+
 
     # AppInfoList关联查询
     for appInfo in appInfoList:
@@ -51,14 +81,17 @@ def listApp(req):
             appVersion = models.AppVersion.objects.get(id=versionId)
         except Exception as e:
             appVersion = '无'
-        if appVersion:
-            appInfo.versionid = appVersion
+        appInfo.versionid = appVersion
 
+    # 分页信息
+    paginator = Paginator(appInfoList, PAGE_NUM)
+    currentPage = paginator
 
-
-    cx['appInfoList'] = appInfoList
+    cx['appInfoList'] = paginator.page(currentPageNo)
     cx['flatFormList'] = flatFormList
     cx['categoryLevel1List'] = categoryLevel1List
+    cx['page'] = currentPage
+    cx['currentPageNo'] = currentPageNo
 
     return render(req, 'appList.html', context=cx)
 
@@ -74,3 +107,13 @@ def categorylevellistJson(req):
     # jsondata = dict()
     # jsondata['categoryLevel2List'] = level23Set
     return JsonResponse(level23Set, safe=False)
+
+# 过滤dict中的None值
+def filterNoneValue(dict, key, value):
+    queryDict = dict
+
+    if value:
+        if not key == 'softwarename':
+            value = int(value)
+        dict[key] = value
+    return queryDict

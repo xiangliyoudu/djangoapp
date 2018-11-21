@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.core import serializers
@@ -19,7 +19,9 @@ def listApp(req):
     # filter参数字典
     queryParmsDict = dict()
     # post 请求处理
-    listAppPost(req, queryParmsDict)
+    if req.POST:
+        currentPageNo, queryParmsDict = listAppPost(req, currentPageNo, queryParmsDict)
+
     # 查询app所有平台记录
     flatFormList = models.DataDictionary.objects.filter(typecode='APP_FLATFORM')
     # 查询一级分类记录
@@ -55,6 +57,7 @@ def categorylevellistJson(req):
     # jsondata['categoryLevel2List'] = level23Set
     return JsonResponse(level23Set, safe=False)
 
+# app 审查请求
 def checkAppInfo(req):
     # 获取get请求中的参数
     aid = req.GET.get('aid')
@@ -70,6 +73,23 @@ def checkAppInfo(req):
     cx['appVersion'] = appVersion
 
     return render(req, 'appcheck.html', context=cx)
+
+
+def checkSave(req):
+    # 获取表单数据
+    appId = req.POST.get('id')
+    appStatus = req.POST.get('status')
+    if appStatus == '审核通过':
+        status = 2
+    else:
+        status = 3
+    # 查询appInfo信息
+    appInfo = models.AppInfo.objects.get(id=appId)
+    # 更新appInfo信息
+    appInfo.status = status
+    appInfo.save()
+    # 页面重定向
+    return HttpResponseRedirect(reverse('listApp'))
 
 # 过滤dict中的None值
 def filterNoneValue(dict, key, value):
@@ -112,18 +132,19 @@ def getAppInfoRelatedModels(appInfo):
     appInfo.versionid = appVersion
 
 # applist Post 请求处理方法
-def listAppPost(req, queryParmsDict):
-    if req.POST:
-        # 获取当前页面
-        currentPageNo = int(req.POST.get('pageIndex'))
-        # 获取‘查询’表单参数，过滤None值，添加到queryParmsdict
-        querySoftwareName = req.POST.get('querySoftwareName')
-        queryParmsDict = filterNoneValue(queryParmsDict, 'softwarename', querySoftwareName)
-        queryFlatformId = req.POST.get('queryFlatformId')
-        queryParmsDict = filterNoneValue(queryParmsDict, 'flatformid', queryFlatformId)
-        queryCategoryLevel1 = req.POST.get('queryCategoryLevel1')
-        queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel1', queryCategoryLevel1)
-        queryCategoryLevel2 = req.POST.get('queryCategoryLevel2')
-        queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel2', queryCategoryLevel2)
-        queryCategoryLevel3 = req.POST.get('queryCategoryLevel3')
-        queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel3', queryCategoryLevel3)
+def listAppPost(req, currentPageNo, queryParmsDict):
+    # 获取当前页面
+    currentPageNo = int(req.POST.get('pageIndex'))
+    # 获取‘查询’表单参数，过滤None值，添加到queryParmsdict
+    querySoftwareName = req.POST.get('querySoftwareName')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'softwarename', querySoftwareName)
+    queryFlatformId = req.POST.get('queryFlatformId')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'flatformid', queryFlatformId)
+    queryCategoryLevel1 = req.POST.get('queryCategoryLevel1')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel1', queryCategoryLevel1)
+    queryCategoryLevel2 = req.POST.get('queryCategoryLevel2')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel2', queryCategoryLevel2)
+    queryCategoryLevel3 = req.POST.get('queryCategoryLevel3')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel3', queryCategoryLevel3)
+
+    return currentPageNo, queryParmsDict

@@ -14,8 +14,10 @@ urlpatterns = [
     url(r'^app/list/$', views.listApp, name='listApp'),
     # ajax获取二三级分类信息
     url(r'^categorylevellist.json/$', views.categorylevellistJson, name='categorylevellistJson'),
-    # appInfo check页面
+    # appInfo check显示页面
     url(r'^app/list/check/$', views.checkAppInfo, name='checkAppInfo'),
+    # appInfo check提交页面
+    url(r'^app/checksave/$', views.checkSave, name='checkSave'),
 
 
 

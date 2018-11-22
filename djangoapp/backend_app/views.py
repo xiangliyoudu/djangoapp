@@ -1,14 +1,44 @@
-from django.shortcuts import render, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect, redirect
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from . import models
 from django.core.paginator import Paginator
+import json
 
 # Create your views here.
 
+# backend user 登录页面
+def userLogin(req, error):
+    return render(req, 'backend_login.html', {'error': error})
+
+# 用户登录处理
+def doUserLogin(req):
+    # 获取表单数据
+    userName = req.POST.get('userCode')
+    userPassword = req.POST.get('userPassword')
+
+    try:
+        # 查询backend user信息，验证用户名称和密码
+        backendUser = models.BackendUser.objects.get(usercode=userName)
+        # 登录成功
+        if backendUser.userpassword == userPassword:
+            backendUser = json.dumps(backendUser, cls=BackendUserEncoder)
+            req.session['sessionUser'] = backendUser
+            return loginMain(req)
+        else:
+            error = '密码错误'
+    except Exception as e:
+        error = '用户不存在'
+    # 登录失败
+    return userLogin(req, error)
+
 # 处理首页请求
 def loginMain(req):
+    sessionUser = req.session.get('sessionUser')
+    print(sessionUser)
+    sessionUser = json.loads(sessionUser)
+    print(sessionUser, type(sessionUser))
     return render(req, 'main.html')
 
 # app管理请求
@@ -148,3 +178,14 @@ def listAppPost(req, currentPageNo, queryParmsDict):
     queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel3', queryCategoryLevel3)
 
     return currentPageNo, queryParmsDict
+
+# backendUser JsonEncoder class
+class BackendUserEncoder(json.JSONEncoder):
+    # 重写方法
+    def default(self, obj):
+        if isinstance(obj, models.BackendUser):
+            return obj.__str__()
+        return json.JSONEncoder.default(self, obj)
+
+
+

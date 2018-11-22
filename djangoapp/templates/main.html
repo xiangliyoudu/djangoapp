@@ -44,7 +44,7 @@
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>
-                <h2>{{userSession.userCode }}</h2>
+                <h2>{{request.session.userName }}</h2>
               </div>
             </div>
             <!-- /menu profile quick info -->
@@ -111,7 +111,7 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="/static/images/img.jpg" alt="">{{userSession.userCode }}
+                    <img src="/static/images/img.jpg" alt="">{{request.session.userName  }}
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -191,7 +191,7 @@
 <div class="page-title">
 	<div class="title_left">
 		<h3>
-			欢迎你：{{userSession.userName }}<strong> | 角色：{{userSession.userTypeName }}</strong>
+			欢迎你：{{request.session.userName  }}<strong> | 角色：{{request.session.userRoleName  }}</strong>
 		</h3>
 	</div>
 </div>

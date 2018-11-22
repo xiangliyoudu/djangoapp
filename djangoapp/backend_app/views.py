@@ -23,8 +23,13 @@ def doUserLogin(req):
         backendUser = models.BackendUser.objects.get(usercode=userName)
         # 登录成功
         if backendUser.userpassword == userPassword:
-            backendUser = json.dumps(backendUser, cls=BackendUserEncoder)
-            req.session['sessionUser'] = backendUser
+            # backendUser = json.dumps(backendUser, cls=BackendUserEncoder)
+            # 查询用户角色信息
+            valueId = backendUser.usertype
+            dataDictionary = models.DataDictionary.objects.filter(typecode='USER_TYPE').get(valueid=valueId)
+            # 将username userrolename存入session
+            req.session['userName'] = backendUser.username
+            req.session['userRoleName'] = dataDictionary.valuename
             return loginMain(req)
         else:
             error = '密码错误'
@@ -35,10 +40,6 @@ def doUserLogin(req):
 
 # 处理首页请求
 def loginMain(req):
-    sessionUser = req.session.get('sessionUser')
-    print(sessionUser)
-    sessionUser = json.loads(sessionUser)
-    print(sessionUser, type(sessionUser))
     return render(req, 'main.html')
 
 # app管理请求

@@ -3,6 +3,8 @@ from django.contrib import admin
 # 导入backend_app 子路由
 from backend_app import backend_urls as bu
 from common_app import common_urls as cu
+from dev_app import dev_urls as du
+
 
 urlpatterns = [
     # Examples:
@@ -16,5 +18,8 @@ urlpatterns = [
 
     # 子路由backend处理请求
     url(r'^backend/', include(bu)),
+
+    # 子路由dev处理请求
+    url(r'^dev/', include(du)),
 
 ]

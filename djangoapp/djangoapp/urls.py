@@ -14,12 +14,16 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     #平台首页请求
-    url(r'^index/$', include(cu)),
+    url(r'^index/', include(cu)),
 
     # 子路由backend处理请求
     url(r'^backend/', include(bu)),
 
     # 子路由dev处理请求
     url(r'^dev/', include(du)),
+
+    url(r'^logout/', include(cu)),
+
+
 
 ]

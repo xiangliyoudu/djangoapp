@@ -18,7 +18,11 @@ def dologin(req):
         devUser = DevUser.objects.get(devcode=devName)
         if devUser.devpassword == devPassword:
             # 登录成功
-            return HttpResponse('dev logining ...')
+            # 查询用户角色信息
+            # 将username userrolename存入session
+            req.session['devName'] = devUser.devname
+            req.session['devCode'] = devUser.devcode
+            return render(req, 'dev_main.html')
         else:
             error = '密码错误'
     except Exception as e:

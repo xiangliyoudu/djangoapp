@@ -9,5 +9,6 @@ urlpatterns = [
     # 首页
     url(r'^$', views.getIndex, name='getIndex'),
 
-
+    # logout
+    url(r'^logout/$', views.logout, name='logout'),
 ]

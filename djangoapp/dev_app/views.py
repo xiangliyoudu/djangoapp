@@ -1,5 +1,7 @@
 from django.shortcuts import render, HttpResponse
+from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.core import serializers
 
 from backend_app.models import *
 
@@ -33,6 +35,7 @@ def dologin(req):
     cx['error'] = error
     return render(req, 'dev_login.html', context=cx)
 
+# appinfo list
 def appList(req):
     PAGE_NUM = 5
     # 当前页码
@@ -66,6 +69,10 @@ def appList(req):
     cx['currentPageNo'] = currentPageNo
 
     return render(req, 'dev_appList.html', context=cx)
+
+# appInfo add
+def appInfoaAdd(req):
+    return render(req, 'appInfo_add.html')
 
 
 # appinfo关联查询
@@ -125,3 +132,27 @@ def filterNoneValue(dict, key, value):
             value = int(value)
         dict[key] = value
     return queryDict
+
+# 查询flatformlist，返回JsonResponse
+def dataDictionaryListJson(req):
+    typeCode = req.GET.get('tcode')
+    # 查询app所有平台记录
+    flatFormList = DataDictionary.objects.filter(typecode=typeCode)
+    flatFormList = serializers.serialize('json', flatFormList, ensure_ascii=False)
+
+    return JsonResponse(flatFormList, safe=False)
+
+# 查询apkname是否已经存在
+def apkExistJson(req):
+    APKName = req.GET.get('APKName')
+    try:
+        appInfo = AppInfo.objects.get(apkname=APKName)
+        APKName = 'exist'
+    except Exception as e:
+        APKName = 'noexist'
+    # str类型变量，可以直接由JsonResponse转换为json
+    return JsonResponse(APKName, safe=False)
+
+# 保存appInfo到数据库
+def appInfoAddSave(req):
+    return HttpResponse('appinfo save....')

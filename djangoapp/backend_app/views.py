@@ -79,6 +79,8 @@ def listApp(req):
 def categorylevellistJson(req):
     # 根据一级、二级分类查询二、三级分类记录
     pid = req.GET.get('pid')
+    if pid == '':
+        pid = None
     # 获取queryset
     level23Set = models.AppCategory.objects.filter(parentid=pid)
     # 序列化为json

@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse
+from django.core.paginator import Paginator
 
 from backend_app.models import *
 
@@ -31,3 +32,96 @@ def dologin(req):
     cx = dict()
     cx['error'] = error
     return render(req, 'dev_login.html', context=cx)
+
+def appList(req):
+    PAGE_NUM = 5
+    # 当前页码
+    currentPageNo = 1
+    # filter参数字典
+    queryParmsDict = dict()
+    # post 请求处理
+    if req.POST:
+        currentPageNo, queryParmsDict = listAppPost(req, currentPageNo, queryParmsDict)
+    #查询app状态信息
+    statusList = DataDictionary.objects.filter(typecode='APP_STATUS')
+    # 查询app所有平台记录
+    flatFormList = DataDictionary.objects.filter(typecode='APP_FLATFORM')
+    # 查询一级分类记录
+    categoryLevel1List = AppCategory.objects.filter(parentid=None)
+    # 根据queryParmsDict，查询所有 appinfo
+    appInfoList = AppInfo.objects.complex_filter(queryParmsDict)
+    # AppInfoList关联查询
+    for appInfo in appInfoList:
+        getAppInfoRelatedModels(appInfo)
+    # 分页信息
+    paginator = Paginator(appInfoList, PAGE_NUM)
+    currentPage = paginator
+    # context dict
+    cx = dict()
+    cx['statusList'] = statusList
+    cx['appInfoList'] = paginator.page(currentPageNo)
+    cx['flatFormList'] = flatFormList
+    cx['categoryLevel1List'] = categoryLevel1List
+    cx['page'] = currentPage
+    cx['currentPageNo'] = currentPageNo
+
+    return render(req, 'dev_appList.html', context=cx)
+
+
+# appinfo关联查询
+def getAppInfoRelatedModels(appInfo):
+    # 查询数据字典，获取平台名称
+    valueId = appInfo.flatformid
+    dataDictionary = DataDictionary.objects.filter(typecode='APP_FLATFORM').get(valueid=valueId)
+    appInfo.flatformid = dataDictionary
+    # 查询一级分类，获取分类名称
+    level1Id = appInfo.categorylevel1
+    appCategory1 = AppCategory.objects.get(id=level1Id)
+    appInfo.categorylevel1 = appCategory1
+    # 查询二级分类，获取分类名称
+    level2Id = appInfo.categorylevel2
+    appCategory2 = AppCategory.objects.get(id=level2Id)
+    appInfo.categorylevel2 = appCategory2
+    # 查询三级分类，获取分类名称
+    level3Id = appInfo.categorylevel3
+    appCategory3 = AppCategory.objects.get(id=level3Id)
+    appInfo.categorylevel3 = appCategory3
+    # 查询数据字典，获取app状态
+    valueId = appInfo.status
+    dataDictionary = DataDictionary.objects.filter(typecode='APP_STATUS').get(valueid=valueId)
+    appInfo.status = dataDictionary
+    # 查询app版本，获取最新版本信息
+    versionId = appInfo.versionid
+    try:
+        appVersion = AppVersion.objects.get(id=versionId)
+    except Exception as e:
+        appVersion = '无'
+    appInfo.versionid = appVersion
+
+# applist Post 请求处理方法
+def listAppPost(req, currentPageNo, queryParmsDict):
+    # 获取当前页面
+    currentPageNo = int(req.POST.get('pageIndex'))
+    # 获取‘查询’表单参数，过滤None值，添加到queryParmsdict
+    querySoftwareName = req.POST.get('querySoftwareName')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'softwarename', querySoftwareName)
+    queryFlatformId = req.POST.get('queryFlatformId')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'flatformid', queryFlatformId)
+    queryCategoryLevel1 = req.POST.get('queryCategoryLevel1')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel1', queryCategoryLevel1)
+    queryCategoryLevel2 = req.POST.get('queryCategoryLevel2')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel2', queryCategoryLevel2)
+    queryCategoryLevel3 = req.POST.get('queryCategoryLevel3')
+    queryParmsDict = filterNoneValue(queryParmsDict, 'categorylevel3', queryCategoryLevel3)
+
+    return currentPageNo, queryParmsDict
+
+# 过滤dict中的None值
+def filterNoneValue(dict, key, value):
+    queryDict = dict
+
+    if value:
+        if not key == 'softwarename':
+            value = int(value)
+        dict[key] = value
+    return queryDict

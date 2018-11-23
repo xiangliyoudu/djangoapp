@@ -11,7 +11,7 @@ urlpatterns = [
     # 登录页面
     url(r'^dologin/$', views.dologin, name='dologin'),
 
-
+    url(r'^app/list/$', views.appList, name='appList')
 
 
 ]

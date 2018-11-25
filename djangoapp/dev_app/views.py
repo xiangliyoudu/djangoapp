@@ -2,6 +2,8 @@ from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.core import serializers
+import os
+from datetime import datetime
 
 from backend_app.models import *
 
@@ -155,4 +157,50 @@ def apkExistJson(req):
 
 # 保存appInfo到数据库
 def appInfoAddSave(req):
-    return HttpResponse('appinfo save....')
+    if req.POST:
+        formPost = req.POST
+        newAppInfo = AppInfo()
+        # 获取表单数据，并赋值给newAppInfo
+        newAppInfo.softwarename = formPost.get('softwareName')
+        newAppInfo.apkname = formPost.get('APKName')
+        newAppInfo.supportrom = formPost.get('supportROM')
+        newAppInfo.interfacelanguage = formPost.get('interfaceLanguage')
+        newAppInfo.softwaresize = int(formPost.get('softwareSize'))
+        newAppInfo.downloads = int(formPost.get('downloads'))
+        newAppInfo.flatformid = int(formPost.get('flatformId'))
+        newAppInfo.categorylevel1 = int(formPost.get('categoryLevel1'))
+        newAppInfo.categorylevel2 = int(formPost.get('categoryLevel2'))
+        newAppInfo.categorylevel3 = int(formPost.get('categoryLevel3'))
+        newAppInfo.status = int(formPost.get('status'))
+        newAppInfo.appinfo = formPost.get('appInfo')
+        # 获取上传图片对象
+        logopicFile = req.FILES.get('a_logoPicPath')
+        if not logopicFile:
+            return HttpResponse('没有可上传的文件')
+
+        try:
+            # 保存上传的文件
+            with open(os.path.join('E:', logopicFile.name), 'wb') as f:
+                # 文件大小是否大雨2.5M
+                chunkSize = logopicFile.multiple_chunks()
+                # 小文件直接写入 logopicFile.read()
+                if not chunkSize:
+                    f.write(logopicFile.read())
+                else:
+                    # 大文件分块写入 chunks()
+                    for chunk in logopicFile.chunks():
+                        f.write(chunk)
+        except Exception as e:
+            fileUploadError = '文件上传失败'
+            return HttpResponse('文件上传失败')
+
+        # 文件上传路径
+        UPLOADPATH = '/static/uploadfiles/'
+        newAppInfo.logopicpath = os.path.join(UPLOADPATH, logopicFile.name)
+        newAppInfo.logolocpath = UPLOADPATH
+        # appinfo创建时间
+        newAppInfo.creationdate = datetime.now()
+        # save appInfo到db
+        newAppInfo.save()
+
+    return HttpResponse('appinfo saving...')

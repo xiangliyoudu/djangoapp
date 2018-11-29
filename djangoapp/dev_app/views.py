@@ -5,7 +5,7 @@ from django.core import serializers
 import os
 from datetime import datetime
 
-from backend_app.models import *
+from djangoapp.backend_app.models import *
 
 # Create your views here.
 
